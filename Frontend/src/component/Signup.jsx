@@ -1,7 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, json } from 'react-router-dom';
 import axios from "axios";
 import { useForm } from 'react-hook-form';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Signup() {
 
@@ -27,22 +29,26 @@ function Signup() {
       const res = await axios.post("http://localhost:4001/user/signup", userInfo);
       console.log(res.data);
       if (res.data) {
-        alert("Signup Successful");
+        localStorage.setItem('Users',JSON.stringify(res.data.user));
+        toast.success("Signup Successful");
+        <Navigate to="/" />
       }
     } catch (err) {
       if (err.response) {
         console.log(err);
-        alert("Error: " + err.response.data.message);
+        toast.error("Error: " + err.response.data.message);
       } else {
         console.log(err);
-        alert("Error: " + err.message);
+        toast.error("Error: " + err.message);
       }
     }
   };
 
   return (
     <div className="flex items-center justify-center h-screen">
+      <ToastContainer />
       <div className="max-w-md w-full">
+      
         <div id="my_modal_2" className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative">
           <Link to="/" className="absolute top-2 right-2 md:top-4 md:right-4 text-gray-600 dark:bg-slate-900 dark:text-white" onClick={handleClose}>
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

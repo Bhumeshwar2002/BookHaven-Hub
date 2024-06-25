@@ -1,16 +1,48 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from 'react-hook-form';
-
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
-
   const {
     register,
     handleSubmit,
-    // formState: { errors },
   } = useForm();
 
+  const onSubmit = async (data) => {
+    const userInfo = {
+      email: data.email,
+      password: data.password
+    };
+    
+    
+    try {
+      const res = await axios.post("http://localhost:4001/user/login", userInfo);
+      console.log(res.data);
+      if (res.data) {
+        
+        toast.success("Login Successful");
+        setTimeout(()=>{
+          document.getElementById("my_modal_2").close()
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+          window.location.reload()
+        },3000)
+        
+       
+      }
+    } catch (err) {
+      if (err.response) {
+        console.log(err);
+        toast.error("Error: " + err.response.data.message);
+      } else {
+        console.log(err);
+        toast.error("Error: " + err.message);
+        setTimeout(()=>{},3000)
+      }
+    }
+  };
 
   const handleClose = () => {
     const modal = document.getElementById("my_modal_2");
@@ -33,7 +65,8 @@ function Login() {
   }, []);
 
   return (
-    <div className="">
+    <div>
+      <ToastContainer />
       <dialog id="my_modal_2" className="modal">
         <button
           className="absolute top-20 right-50 md:mt-12 md:mr-4 text-gray-600 dark:bg-slate-900 dark:text-white"
@@ -60,12 +93,11 @@ function Login() {
                 Sign in to your account
               </h2>
             </div>
-            <form className="mt-8 space-y-6" onSubmit={handleSubmit((data) => console.log(data))} >
+            <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <input
                 type="hidden"
                 name="remember"
                 value="true"
-              
               />
               <div className="rounded-md shadow-sm -space-y-px">
                 <div>
