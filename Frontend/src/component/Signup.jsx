@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import axios from "axios";
 import { useForm } from 'react-hook-form';
 
 function Signup() {
@@ -13,6 +14,30 @@ function Signup() {
   const handleClose = () => {
     const modal = document.getElementById("my_modal_2");
     modal.close();
+  };
+
+  const onSubmit = async (data) => {
+    const userInfo = {
+      fullname: data.fullname,
+      email: data.email,
+      password: data.password
+    };
+    
+    try {
+      const res = await axios.post("http://localhost:4001/user/signup", userInfo);
+      console.log(res.data);
+      if (res.data) {
+        alert("Signup Successful");
+      }
+    } catch (err) {
+      if (err.response) {
+        console.log(err);
+        alert("Error: " + err.response.data.message);
+      } else {
+        console.log(err);
+        alert("Error: " + err.message);
+      }
+    }
   };
 
   return (
@@ -30,7 +55,7 @@ function Signup() {
                 Sign up for an account
               </h2>
             </div>
-            <form className="mt-8 space-y-6" onSubmit={handleSubmit((data) => console.log(data))}>
+            <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <input
                 type="hidden"
                 name="remember"
@@ -38,19 +63,18 @@ function Signup() {
               />
               <div className="rounded-md shadow-sm -space-y-px">
                 <div>
-                  <label htmlFor="name" className="sr-only">
-                    Name
+                  <label htmlFor="fullname" className="sr-only">
+                    Fullname
                   </label>
                   <input
-                    id="name"
-                    name="name"
+                    id="fullname"
+                    name="fullname"
                     type="text"
                     autoComplete="name"
                     required
                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder="Name"
-
-                    {...register('Name')}
+                    placeholder="Fullname"
+                    {...register('fullname')}
                   />
                 </div>
                 <div>
@@ -65,8 +89,7 @@ function Signup() {
                     required
                     className="appearance-none rounded-none relative block w-full mt-2 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                     placeholder="Email address"
-
-                    {...register('Email address')}
+                    {...register('email')}
                   />
                 </div>
                 <div>
@@ -81,7 +104,6 @@ function Signup() {
                     required
                     className="appearance-none rounded-none relative block w-full mt-2 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                     placeholder="Password"
-
                     {...register('password')}
                   />
                 </div>
