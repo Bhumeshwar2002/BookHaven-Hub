@@ -1,21 +1,23 @@
+
 import React from 'react';
 import { useAuth } from '../context/AuthProvider';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Logout() {
-    const [authUser, setAuthUser] = useAuth();
+    const [, setAuthUser] = useAuth();
 
     const handleLogout = async () => {
         try {
-            localStorage.removeItem('Users'); // Clear user data from localStorage
-            sessionStorage.removeItem('AuthToken'); // Clear session storage if needed
+            localStorage.removeItem('Users');
+            sessionStorage.removeItem('AuthToken');
 
-            await setAuthUser(null); // Clear the authenticated user
+            setAuthUser(null);
 
             toast.success('Logged out successfully');
-            // Optionally navigate to another route instead of reloading the entire page
-            // history.push('/login');
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
         } catch (error) {
             console.error('Error logging out:', error);
             toast.error('Error logging out. Please try again.');

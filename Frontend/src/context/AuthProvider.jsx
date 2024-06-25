@@ -1,25 +1,5 @@
-// import React, { createContext, useContext, useState } from 'react'
-
-// export const AuthContext = createContext()
-// export default function AuthProvider({children}) {
-
-//     const initialAuthUser = localStorage.getItem("Users");
-//     const [authUser , setAuthUser] = useState(
-//         initialAuthUser ? JSON.parse(initialAuthUser) : undefined
-//     )
-//     return(
-//         <AuthContext.Provider value={{authUser,setAuthUser}}>
-
-//             {children}
-//         </AuthContext.Provider>
-//     )
-// }
-// export const useAuth = ()=>useContext(AuthContext)
-
-
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { toast } from 'react-toastify'; // Import toast notifications
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export const AuthContext = createContext();
@@ -31,7 +11,6 @@ export default function AuthProvider({ children }) {
     );
 
     useEffect(() => {
-        // Error handling for invalid localStorage data
         try {
             const userData = JSON.parse(localStorage.getItem("Users"));
             if (userData) {
@@ -46,7 +25,7 @@ export default function AuthProvider({ children }) {
     }, []);
 
     return (
-        <AuthContext.Provider value={[ authUser, setAuthUser ]}>
+        <AuthContext.Provider value={[authUser, setAuthUser]}>
             {children}
         </AuthContext.Provider>
     );

@@ -7,6 +7,8 @@ import Signup from './component/Signup';
 import About from './about/About';
 import Contact from './contact/Contact';
 import { useAuth } from './context/AuthProvider';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
@@ -27,9 +29,13 @@ function App() {
         
         
       </Routes>
+      <ToastContainer />
      </div>
     
   );
 }
 
 export default App;
+
+
+

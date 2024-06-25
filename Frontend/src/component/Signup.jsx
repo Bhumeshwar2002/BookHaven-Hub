@@ -1,12 +1,12 @@
 import React from 'react';
-import { Link, Navigate, json } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { useForm } from 'react-hook-form';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Signup() {
-
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -15,7 +15,9 @@ function Signup() {
 
   const handleClose = () => {
     const modal = document.getElementById("my_modal_2");
-    modal.close();
+    if (modal) {
+      modal.close();
+    }
   };
 
   const onSubmit = async (data) => {
@@ -24,21 +26,18 @@ function Signup() {
       email: data.email,
       password: data.password
     };
-    
+
     try {
       const res = await axios.post("http://localhost:4001/user/signup", userInfo);
-      console.log(res.data);
       if (res.data) {
-        localStorage.setItem('Users',JSON.stringify(res.data.user));
+        localStorage.setItem('Users', JSON.stringify(res.data.user));
         toast.success("Signup Successful");
-        <Navigate to="/" />
+        navigate("/"); // Navigate to home page
       }
     } catch (err) {
       if (err.response) {
-        console.log(err);
         toast.error("Error: " + err.response.data.message);
       } else {
-        console.log(err);
         toast.error("Error: " + err.message);
       }
     }
@@ -48,7 +47,6 @@ function Signup() {
     <div className="flex items-center justify-center h-screen">
       <ToastContainer />
       <div className="max-w-md w-full">
-      
         <div id="my_modal_2" className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative">
           <Link to="/" className="absolute top-2 right-2 md:top-4 md:right-4 text-gray-600 dark:bg-slate-900 dark:text-white" onClick={handleClose}>
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,11 +60,7 @@ function Signup() {
               </h2>
             </div>
             <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-              <input
-                type="hidden"
-                name="remember"
-                value="true"
-              />
+              <input type="hidden" name="remember" value="true" />
               <div className="rounded-md shadow-sm -space-y-px">
                 <div>
                   <label htmlFor="fullname" className="sr-only">
@@ -80,8 +74,9 @@ function Signup() {
                     required
                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                     placeholder="Fullname"
-                    {...register('fullname')}
+                    {...register('fullname', { required: true })}
                   />
+                  {errors.fullname && <p className="text-red-500 text-xs mt-1">Fullname is required</p>}
                 </div>
                 <div>
                   <label htmlFor="email-address" className="sr-only">
@@ -95,8 +90,9 @@ function Signup() {
                     required
                     className="appearance-none rounded-none relative block w-full mt-2 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                     placeholder="Email address"
-                    {...register('email')}
+                    {...register('email', { required: true })}
                   />
+                  {errors.email && <p className="text-red-500 text-xs mt-1">Email is required</p>}
                 </div>
                 <div>
                   <label htmlFor="password" className="sr-only">
@@ -110,8 +106,9 @@ function Signup() {
                     required
                     className="appearance-none rounded-none relative block w-full mt-2 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                     placeholder="Password"
-                    {...register('password')}
+                    {...register('password', { required: true })}
                   />
+                  {errors.password && <p className="text-red-500 text-xs mt-1">Password is required</p>}
                 </div>
               </div>
 

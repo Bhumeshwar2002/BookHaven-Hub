@@ -1,75 +1,55 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from '../context/AuthProvider';
 
 function Login() {
-  const {
-    register,
-    handleSubmit,
-  } = useForm();
+  const navigate = useNavigate();
+  const { register, handleSubmit } = useForm();
+  const [, setAuthUser] = useAuth(); // Using setAuthUser from context
 
   const onSubmit = async (data) => {
     const userInfo = {
       email: data.email,
       password: data.password
     };
-    
-    
+
     try {
       const res = await axios.post("http://localhost:4001/user/login", userInfo);
-      console.log(res.data);
       if (res.data) {
-        
         toast.success("Login Successful");
-        setTimeout(()=>{
-          document.getElementById("my_modal_2").close()
-          localStorage.setItem('user', JSON.stringify(res.data.user));
-          window.location.reload()
-        },3000)
-        
-       
+        localStorage.setItem('Users', JSON.stringify(res.data.user));
+        setAuthUser(res.data.user); 
+        setTimeout(() => {
+          navigate('/');
+          window.location.reload();
+        }, 3000);
       }
     } catch (err) {
       if (err.response) {
-        console.log(err);
         toast.error("Error: " + err.response.data.message);
       } else {
-        console.log(err);
         toast.error("Error: " + err.message);
-        setTimeout(()=>{},3000)
       }
     }
   };
 
   const handleClose = () => {
     const modal = document.getElementById("my_modal_2");
-    modal.close();
+    if (modal) {
+      modal.close();
+    }
   };
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      const modal = document.getElementById("my_modal_2");
-      if (event.target === modal) {
-        handleClose();
-      }
-    };
-
-    document.addEventListener("click", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, []);
 
   return (
     <div>
       <ToastContainer />
       <dialog id="my_modal_2" className="modal">
         <button
-          className="absolute top-20 right-50 md:mt-12 md:mr-4 text-gray-600 dark:bg-slate-900 dark:text-white"
+          className="absolute top-4 right-4 text-gray-600 dark:bg-slate-900 dark:text-white"
           onClick={handleClose}
         >
           <svg
@@ -94,11 +74,7 @@ function Login() {
               </h2>
             </div>
             <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-              <input
-                type="hidden"
-                name="remember"
-                value="true"
-              />
+              <input type="hidden" name="remember" value="true" />
               <div className="rounded-md shadow-sm -space-y-px">
                 <div>
                   <label htmlFor="email-address" className="sr-only">
@@ -112,7 +88,7 @@ function Login() {
                     required
                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                     placeholder="Email address"
-                    {...register('email')}
+                    {...register('email', { required: true })}
                   />
                 </div>
                 <div>
@@ -127,7 +103,7 @@ function Login() {
                     required
                     className="appearance-none rounded-none relative block w-full mt-2 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                     placeholder="Password"
-                    {...register('password')}
+                    {...register('password', { required: true })}
                   />
                 </div>
               </div>
@@ -166,11 +142,6 @@ function Login() {
                 </button>
               </div>
             </form>
-            <div>
-              <div className="flex justify-center mt-2">
-                {/* Google Sign-in button */}
-              </div>
-            </div>
             <p className="mt-2 text-right text-sm text-gray-600">
               Not registered?{" "}
               <Link to="/signup" className="underline text-blue-500 cursor-pointer">
